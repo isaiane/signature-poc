@@ -1,23 +1,39 @@
 'use client'
 
 import { QRCodeCanvas } from 'qrcode.react'
-
-const token = 'xyz123' // stub, será gerado na fase de fingerprint
-const mobileUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/capture?token=${token}`
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function HandoffPage() {
+  const router = useRouter()
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const userAgent = typeof window !== 'undefined' ? navigator.userAgent : ''
+    const mobileRegex = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    const isMobileDevice = mobileRegex.test(userAgent)
+    setIsMobile(isMobileDevice)
+
+    if (isMobileDevice) {
+      router.replace('/capture')
+    }
+  }, [router])
+
+  if (isMobile === null) return null
+  if (isMobile) return null
+
+  const token = 'stub-token-123'
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/capture?token=${token}`
+
   return (
     <main className="p-8 text-center">
       <h1 className="text-xl font-semibold">Continue no celular</h1>
-      <p className="mt-4">Aponte a câmera para o QR Code e finalize a assinatura no seu celular.</p>
-
+      <p className="mt-4">Escaneie o QR Code para continuar</p>
       <div className="mt-6 flex justify-center">
-        <QRCodeCanvas value={mobileUrl} size={200} />
+        <QRCodeCanvas value={url} size={200} />
       </div>
-
-      <p className="mt-4 text-sm text-gray-500">
-        Ou acesse manualmente:<br />
-        <a href={mobileUrl} className="text-blue-600 underline break-all">{mobileUrl}</a>
+      <p className="mt-4 text-sm text-gray-500 break-all">
+        Ou acesse: <a href={url} className="underline text-blue-600">{url}</a>
       </p>
     </main>
   )
