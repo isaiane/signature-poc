@@ -15,7 +15,7 @@ export default function HandoffPage() {
     setIsMobile(isMobileDevice)
 
     if (isMobileDevice) {
-      router.replace('/capture')
+      router.replace('/mobile/start')
     }
   }, [router])
 
@@ -23,7 +23,7 @@ export default function HandoffPage() {
   if (isMobile) return null
 
   const token = 'stub-token-123'
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/capture?token=${token}`
+  const url = `https://semihyperbolic-unconcordantly-eneida.ngrok-free.dev//mobile/start?token=${token}`
 
   return (
     <main className="p-8 text-center">
