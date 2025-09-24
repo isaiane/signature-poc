@@ -1,38 +1,65 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import SignatureCamera from '@/components/SignatureCamera'
 
 export default function CapturePage() {
-  const [photo, setPhoto] = useState<string | null>(null)
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment')
+  const [name] = useState('Carlos Eduardo Gomes')
+
+  const search = useSearchParams()
+  const router = useRouter()
+  const [sessionToken, setSessionToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    const token = search.get('token')
+    if (token) {
+      setSessionToken(token)
+      console.log('[capture] token:', token)
+    }
+  }, [search])
+
+  const handleCapture = (dataUrl: string) => {
+    if (dataUrl && sessionToken) {
+      sessionStorage.setItem('signaturePhoto', dataUrl)
+      router.push(`/mobile/preview?token=${sessionToken}`)
+    }
+  }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen px-4 py-8 text-center">
-      <h1 className="text-lg font-semibold mb-4">Capture sua assinatura</h1>
+    <main className="flex flex-col items-center justify-between min-h-screen px-4 py-6 bg-gray-100 text-center">
+      <p className="text-sm text-gray-700 mt-2 mb-4">
+        Assine em um papel em branco ou use a assinatura do seu documento e enquadre na moldura e tire uma foto.
+      </p>
 
-      {!photo ? (
-        <SignatureCamera onCapture={(dataUrl) => setPhoto(dataUrl)} />
-      ) : (
-        <>
-          <img
-            src={photo}
-            alt="Assinatura capturada"
-            className="w-full max-w-md rounded shadow"
-          />
-          <button
-            onClick={() => setPhoto(null)}
-            className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
-          >
-            Refazer
-          </button>
-          <button
-            onClick={() => console.log('[capture] continuar com imagem', photo)}
-            className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
-          >
-            Continuar
-          </button>
-        </>
-      )}
+      <div className="relative w-full max-w-md aspect-video rounded-md overflow-hidden border-4 border-white shadow-lg">
+        <SignatureCamera
+          facingMode={facingMode}
+          onCapture={handleCapture}
+        />
+      </div>
+
+      <div className="mt-4">
+        <hr className="border-t border-gray-300 w-48 mx-auto mb-1" />
+        <p className="text-sm text-gray-800">👤 {name}</p>
+      </div>
+
+      <div className="mt-4 flex gap-4">
+        <button
+          onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
+          className="text-gray-600"
+        >
+          🔄 Virar câmera
+        </button>
+
+        <button
+          onClick={() => window.location.href = `/mobile/alternative?token=${sessionToken}`}
+          className="underline text-sm text-gray-600"
+        >
+          Usar outro método de assinatura
+        </button>
+      </div>
     </main>
   )
 }

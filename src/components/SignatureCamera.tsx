@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 
 interface SignatureCameraProps {
   onCapture: (imageDataUrl: string) => void
+  facingMode: 'environment' | 'user'
 }
 
-export default function SignatureCamera({ onCapture }: SignatureCameraProps) {
+export default function SignatureCamera({ onCapture, facingMode }: SignatureCameraProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [error, setError] = useState<string | null>(null)
@@ -15,7 +16,7 @@ export default function SignatureCamera({ onCapture }: SignatureCameraProps) {
     const startCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
+          video: { facingMode },
         })
         if (videoRef.current) {
           videoRef.current.srcObject = stream
@@ -33,7 +34,7 @@ export default function SignatureCamera({ onCapture }: SignatureCameraProps) {
         tracks.forEach((track) => track.stop())
       }
     }
-  }, [])
+  }, [facingMode])
 
   const handleCapture = () => {
     if (!videoRef.current || !canvasRef.current) return
