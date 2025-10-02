@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const options = [
   {
-    id: 'camera',
+    id: 'capture',
     label: 'Usar a câmera do celular',
     description: 'Pegue um papel, assine e tire uma foto. Nós cuidamos do resto!',
     recommended: true,

@@ -1,9 +1,8 @@
-
-
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { processSignature } from '@/lib/process_signature'
 
 export default function DrawSignaturePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -25,6 +24,9 @@ export default function DrawSignaturePage() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
     let drawing = false
 
     const start = (e: TouchEvent | MouseEvent) => {
@@ -42,7 +44,8 @@ export default function DrawSignaturePage() {
       const y = 'touches' in e ? e.touches[0].clientY : e.clientY
       const rect = canvas.getBoundingClientRect()
       ctx.lineTo(x - rect.left, y - rect.top)
-      ctx.strokeStyle = '#000'
+      ctx.strokeStyle = '#000000'
+      ctx.fillStyle = '#ffffff'
       ctx.lineWidth = 2
       ctx.lineCap = 'round'
       ctx.stroke()
@@ -78,18 +81,25 @@ export default function DrawSignaturePage() {
       const ctx = canvas.getContext('2d')
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#fff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
       }
     }
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const canvas = canvasRef.current
-    if (canvas) {
-      const data = canvas.toDataURL('image/png')
-      console.log('[draw] continuar com imagem', data)
-      if (token) {
-        router.push(`/mobile/preview?token=${token}`)
-      }
+    if (!canvas || !token) return
+
+    const dataUrl = canvas.toDataURL('image/png')
+    try {
+      const { png } = await processSignature(dataUrl)
+      sessionStorage.setItem('finalSignatureImage', png)
+      sessionStorage.setItem('signatureMethod', 'draw')
+      router.push(`/mobile/preview?token=${token}`)
+    } catch (err) {
+      console.error('[draw] erro ao processar assinatura:', err)
+      alert('Falha ao processar assinatura. Tente novamente.')
     }
   }
 
@@ -102,7 +112,7 @@ export default function DrawSignaturePage() {
         ref={canvasRef}
         width={300}
         height={120}
-        className="border border-gray-300 bg-white rounded mb-4 touch-none"
+        className="border border-gray-300 bg-white text-black rounded mb-4 touch-none"
       />
 
       <div className="flex gap-4">

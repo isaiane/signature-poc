@@ -18,7 +18,7 @@ export default function PoucoPage() {
   if (!token) return null
 
   const handleContinue = () => {
-    router.push(`/mobile/capture?token=${token}`)
+    router.push(`/mobile/alternative/capture?token=${token}`)
   }
 
   return (

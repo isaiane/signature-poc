@@ -4,7 +4,7 @@ import { Document, Page } from "react-pdf";
 import { useEffect, useState } from "react";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import "@/lib/pdfWorker";
+import "@/lib/pdf_worker";
 
 export default function DocumentViewer() {
   const [numPages, setNumPages] = useState<number>(0);

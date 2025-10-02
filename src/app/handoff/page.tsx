@@ -23,7 +23,7 @@ export default function HandoffPage() {
   if (isMobile) return null
 
   const token = 'stub-token-123'
-  const url = `https://semihyperbolic-unconcordantly-eneida.ngrok-free.dev//mobile/start?token=${token}`
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/mobile/start?token=${token}`
 
   return (
     <main className="p-8 text-center">
