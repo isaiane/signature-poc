@@ -1,6 +1,4 @@
 import * as potrace from 'potrace'
-import fs from 'fs'
-import path from 'path'
 
 interface VectorizeOptions {
   threshold?: number
@@ -48,33 +46,6 @@ export async function vectorizeImage(
   })
 }
 
-/**
- * Vetoriza uma imagem e salva o SVG na pasta temp
- * @param inputBuffer - Buffer da imagem PNG
- * @param filename - Nome do arquivo (sem extensão)
- * @param options - Opções de vetorização
- * @returns Promise<string> - Caminho do arquivo SVG salvo
- */
-export async function vectorizeAndSave(
-  inputBuffer: Buffer,
-  filename: string,
-  options: VectorizeOptions = {}
-): Promise<string> {
-  const tempDir = path.join(process.cwd(), 'temp')
-  
-  // Garantir que a pasta temp existe
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true })
-  }
-
-  const svgBuffer = await vectorizeImage(inputBuffer, options)
-  const filepath = path.join(tempDir, `${filename}.svg`)
-  
-  fs.writeFileSync(filepath, svgBuffer)
-  console.log(`[vectorizer] SVG salvo em: ${filepath}`)
-  
-  return filepath
-}
 
 /**
  * Vetoriza uma assinatura com configurações otimizadas

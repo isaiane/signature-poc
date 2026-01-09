@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { vectorizeImage, vectorizeAndSave } from '@/lib/image_process/vectorizer'
+import { vectorizeImage } from '@/lib/image_process/vectorizer'
+
+// Force Node.js runtime for potrace compatibility
+export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,12 +29,7 @@ export async function POST(req: NextRequest) {
     // Vetorizar a imagem
     const svgBuffer = await vectorizeImage(inputBuffer, options)
 
-    // Salvar na pasta temp para checagem
-    const timestamp = Date.now()
-    const filepath = await vectorizeAndSave(inputBuffer, `vectorized_${timestamp}`, options)
-    console.log(`[vectorize] SVG salvo para checagem em: ${filepath}`)
-
-    return new NextResponse(svgBuffer, {
+    return new NextResponse(new Uint8Array(svgBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/svg+xml',

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import { useClientOnly } from '@/hooks/useClientOnly'
 
 export default function SignaturePreviewPage() {
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null)
@@ -11,6 +12,7 @@ export default function SignaturePreviewPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
+  const isClient = useClientOnly()
 
   // Função auxiliar para decodificar SVG e garantir fundo branco
   const decodeSvg = (dataUrl: string): string => {
@@ -41,10 +43,12 @@ export default function SignaturePreviewPage() {
   }
 
   useEffect(() => {
+    if (!isClient) return
+    
     const saved = sessionStorage.getItem('finalSignatureImage')
     const method = sessionStorage.getItem('signatureMethod')
     if (!saved || !method) {
-      router.replace(`/mobile/alternative?token=${token ?? ''}`)
+      router.replace(`/alternative?token=${token ?? ''}`)
     } else {
       setSignatureDataUrl(saved)
       setOriginMethod(method)
@@ -57,8 +61,9 @@ export default function SignaturePreviewPage() {
         saved.includes('xmlns="http://www.w3.org/2000/svg"')
       setIsSvg(isSvgFormat)
     }
-  }, [router, token])
+  }, [router, token, isClient])
 
+  if (!isClient) return null
   if (!signatureDataUrl) return null
 
   return (
@@ -102,7 +107,7 @@ export default function SignaturePreviewPage() {
           Refazer
         </button>
         <button
-          onClick={() => router.push(`/mobile/apply?token=${token ?? ''}`)}
+          onClick={() => router.push(`/apply?token=${token ?? ''}`)}
           className="px-4 py-2 bg-black text-white rounded text-sm"
         >
           Confirmar

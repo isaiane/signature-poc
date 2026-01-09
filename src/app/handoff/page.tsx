@@ -3,13 +3,17 @@
 import { QRCodeCanvas } from 'qrcode.react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useClientOnly } from '@/hooks/useClientOnly'
 
 export default function HandoffPage() {
   const router = useRouter()
   const [isMobile, setIsMobile] = useState<boolean | null>(null)
+  const isClient = useClientOnly()
 
   useEffect(() => {
-    const userAgent = typeof window !== 'undefined' ? navigator.userAgent : ''
+    if (!isClient) return
+    
+    const userAgent = navigator.userAgent
     const mobileRegex = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
     const isMobileDevice = mobileRegex.test(userAgent)
     setIsMobile(isMobileDevice)
@@ -17,8 +21,9 @@ export default function HandoffPage() {
     if (isMobileDevice) {
       router.replace('/mobile/start')
     }
-  }, [router])
+  }, [router, isClient])
 
+  if (!isClient) return null
   if (isMobile === null) return null
   if (isMobile) return null
 

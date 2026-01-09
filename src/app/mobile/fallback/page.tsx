@@ -2,21 +2,27 @@
 
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useClientOnly } from '@/hooks/useClientOnly'
 
 export default function FallbackPage() {
   const search = useSearchParams()
   const router = useRouter()
   const token = search.get('token')
+  const isClient = useClientOnly()
 
   useEffect(() => {
+    if (!isClient) return
+    
     // Limpa imagem em caso de falha anterior
     sessionStorage.removeItem('finalSignatureImage')
     sessionStorage.removeItem('signatureMethod')
-  }, [])
+  }, [isClient])
 
   const handleRetry = () => {
     router.push(`/mobile/alternative?token=${token}`)
   }
+
+  if (!isClient) return null
 
   return (
     <main className="min-h-screen flex items-center justify-center flex-col bg-white text-gray-800">
@@ -29,7 +35,7 @@ export default function FallbackPage() {
           onClick={handleRetry}
           className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
         >
-          Voltar para escolher método
+          Ir para escolher método
         </button>
       </div>
     </main>

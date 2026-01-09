@@ -1,13 +1,13 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import CameraFeed from '@/components/capture/CameraFeed'
-import OverlayGuide, { OverlayGuideHandle } from '@/components/capture/OverlayGuide'
-import HeaderInstructions from '@/components/capture/HeaderInstructions'
-import FooterActions from '@/components/capture/FooterActions'
+import CameraFeed from '@/components/capture/camera-feed'
+import OverlayGuide, { OverlayGuideHandle } from '@/components/capture/overlay-guide'
+import HeaderInstructions from '@/components/capture/header-instructions'
+import FooterActions from '@/components/capture/footer-actions'
 import { useSignatureCapture } from '@/hooks/useSignatureCapture'
 import { useSearchParams } from 'next/navigation'
-import SignatureProcessing from '@/components/SignatureProcessing'
+import SignatureProcessing from '@/components/signature-processing'
 import { User } from 'lucide-react'
 
 export default function CaptureSignaturePage() {

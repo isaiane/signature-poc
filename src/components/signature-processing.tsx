@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useClientOnly } from '@/hooks/useClientOnly'
 
 interface SignatureProcessingProps {
   dataUrl: string
@@ -12,8 +13,11 @@ export default function SignatureProcessing({ dataUrl, step }: SignatureProcessi
   const router = useRouter()
   const search = useSearchParams()
   const token = search.get('token')
+  const isClient = useClientOnly()
 
   useEffect(() => {
+    if (!isClient) return
+    
     const process = async () => {
       try {
         console.log('[SignatureProcessing] Iniciando processamento...')
@@ -59,7 +63,9 @@ export default function SignatureProcessing({ dataUrl, step }: SignatureProcessi
     }
 
     process()
-  }, [dataUrl, step, token, router])
+  }, [dataUrl, step, token, router, isClient])
+
+  if (!isClient) return null
 
   return (
     <main className="min-h-screen flex items-center justify-center flex-col bg-white text-gray-800">
